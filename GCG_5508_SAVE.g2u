@@ -1,0 +1,47 @@
+Program.Sub.Preflight.Start
+Program.Sub.Preflight.End
+
+Program.Sub.Main.Start
+'GB 4/15/19   Zephyr Products, Inc.
+'customer wants to make sure that the info1 field(Paint Color) has a value entered before allowing the user to "SAVE"
+'customer changed value of info1 field - so I will read that option id # 400398 and then use the value they enter in the message displayed
+'4/16/19 now they also need the same thing for the info2 field option id # 400399
+'4/29/19 now they only want to require the user 1 and user 2 fields if the Vendor Sort field # 000026 does not have a value
+'GCG_5508_SAVE
+
+'Modified to remove User Field 2
+'Trey S, October 7th 2019
+
+F.Intrinsic.Control.Try
+V.Local.sError.Declare(String, "")
+
+v.Local.sUser1.Declare
+'if the vendor sort field # 000026 is blank then require the user 1 and user 2 fields
+f.Intrinsic.Control.If(v.Passed.000026,=,"") 
+		'this is the info 1 field on the inventory screen # 000027
+		f.Intrinsic.Control.If(v.passed.000027,=,"") 
+		'this is the option id # of the info 1 field - ss>company options(adv)>inventory
+		  f.Global.General.ReadOption("400398",1,"",0,v.Local.sUser1)
+		  f.Intrinsic.String.Build("Need to enter {0}",v.Local.sUser1,v.Local.sError)
+		  f.Intrinsic.UI.Msgbox(v.Local.sError )
+		  v.Passed.777777.Set(1)
+		f.Intrinsic.Control.EndIf
+		
+		'Modified to remove User Field 2
+		'Trey S, October 7th 2019
+
+		'this is info 2 field on inventory screen # 000028  
+'		f.Intrinsic.Control.If(v.Passed.000028,=,"")  
+'		  f.Global.General.ReadOption("400399",1,"",0,v.Local.sUser1)
+'		  f.Intrinsic.String.Build("Need to enter {0}",v.Local.sUser1,v.Local.sError)
+'		  f.Intrinsic.UI.Msgbox(v.Local.sError )
+'		  v.Passed.777777.Set(1)
+'		f.Intrinsic.Control.EndIf
+f.Intrinsic.Control.EndIf
+
+F.Intrinsic.Control.Catch
+		F.Intrinsic.String.Build("Project: {0}{1}{1}Subroutine: {2}{1}Error Occurred {3} with description {4}{1}{1}GAB Version: {5}",V.Ambient.ScriptPath,V.Ambient.Newline,V.Ambient.CurrentSubroutine,V.Ambient.ErrorNumber,V.Ambient.ErrorDescription,V.Ambient.GABVersion,V.Local.sError)
+		F.Intrinsic.UI.Msgbox(V.Local.sError)
+		F.Intrinsic.Control.End 
+	F.Intrinsic.Control.EndTry
+Program.Sub.Main.End
